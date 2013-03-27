@@ -14,7 +14,7 @@ $stack = new FianetStack();
 $stack->addControl($control);
 
 //order sending
-$validstack = $sac->sendStacking($stack);
+$validstack = $sac->sendStacking($stack->saveXML());
 
 if ($validstack === false)
 	die('erreur');
