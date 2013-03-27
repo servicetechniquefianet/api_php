@@ -1,0 +1,47 @@
+## Summary ##
+1. How to configure ?
+2. How to use ?
+3. Contacts
+
+
+## Contents ##
+
+
+1. How to configure ?
+
+In order to use a product (Certissim, Kwixo, Sceau) you have to report your private data (given by Fia-Net team) into the configuration file of the concerned service.
+This file is in the folder lib/servicename/const/site_params.yml.
+Once you've written your login, password, siteid, etc. in the file you can start implementating your scripts.
+
+Be careful to include only the files you need. Check the file lib/includes/includes.inc.php and comment the lines you don't need.
+For example if you're implementing Certissim but you've not subscribed Kwixo and Sceau please set the include file as following :
+<?php
+define('FIANET_USE_CDATA', true); //set it to true if you want to protect the values in the XML stream from special chars that could break the stream and cause errors. We strongly advise you to let it set to true.
+define('ROOT_DIR', str_replace('\\', '/', realpath(dirname(__FILE__).'/../..')));
+
+//these lines are mandatory
+require_once ROOT_DIR . '/lib/includes/functions.inc.php';
+require_once ROOT_DIR . '/lib/kernel/includes.inc.php';
+require_once ROOT_DIR . '/lib/common/includes.inc.php';
+
+//these lines are not mandatory. Uncomment only the ones you need
+//require_once ROOT_DIR . '/lib/kwixo/includes.inc.php'; //kwixo is commented because I don't want to use it
+require_once ROOT_DIR . '/lib/sac/includes.inc.php'; //sac is not commented because I'm implementing it on my e-shop
+//require_once ROOT_DIR . '/lib/sceau/includes.inc.php'; //Sceau is commented because I don't want to use it
+
+
+
+
+
+2. How to use ?
+
+Follow the examples given in the folders lib/servicename/examples/
+A complete technical documentation is given : doc/html/index.html
+
+
+
+
+3. Contacts
+
+For any technical question during technical implementation, please contact your dedicated contact. If he or she's not reachable please contact integration-boutique@fia-net.com.
+If you have any technical question after your account is open in production mode please contact support team : support-boutique@fia-net.com.
