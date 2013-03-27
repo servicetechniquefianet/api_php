@@ -44,7 +44,7 @@ class Kwixo extends Service {
    * @param FianetXMLElement $order
    * @return string
    */
-  public function generateCrypt(FianetControl $order) {
+  public function generateCrypt(FianetXMLElement $order) {
     switch ($this->getCryptVersion()) {
       case '2.0':
         return $this->generateCryptV2($order);
@@ -65,7 +65,7 @@ class Kwixo extends Service {
    * @param FianetXMLElement $order
    * @return string
    */
-  public function generateCryptV3(FianetControl $order) {
+  public function generateCryptV3(FianetXMLElement $order) {
     $siteid = $this->getSiteId();
     $montant = urlencode($order->getOneElementByTagName('montant')->nodeValue);
     $email = urlencode($order->getOneElementByTagNameAndAttribute('utilisateur', 'type', 'facturation')->getOneElementByTagName('email')->nodeValue);
@@ -86,10 +86,10 @@ class Kwixo extends Service {
   /**
    * generates and returns crypt V2 value
    * 
-   * @param FianetControl $order
+   * @param FianetXMLElement $order
    * @return string
    */
-  public function generateCryptV2(FianetKwixoControl $order) {
+  public function generateCryptV2(FianetXMLElement $order) {
     $MD5 = new FianetMD5();
 
     $montant = $order->getOneElementByTagName('montant')->nodeValue;
@@ -181,22 +181,22 @@ class Kwixo extends Service {
    * builds and returns the HTML submission form
    *
    * @param string $script script where to redirect the customer
-   * @param FianetKwixoControl $order order at the format FianetXMLElement
-   * @param FianetXMLElement $xmlparams additionnal params
+   * @param string $order XML string of the order
+   * @param string $xmlparams XML string of additionnal params
    * @param string $urlsys URL whereto send the payment tags all allong the transaction life
    * @param string $urlcall URL whereto the customer will be redirected
    * @param string $submittype submit form type: auto, standard or image
    * @param string $imagepath path to the image if submit image
    * @return Form
    */
-  private function getSubmissionForm($scripturl, FianetKwixoControl $order, FianetXMLParams $xmlparams = null, $urlsys = null, $urlcall = null, $submittype = Form::SUBMIT_STANDARD, $imagepath = null) {
+  private function getSubmissionForm($scripturl, $order, $xmlparams = '', $urlsys = null, $urlcall = null, $submittype = Form::SUBMIT_STANDARD, $imagepath = null) {
     //sets form fields
     $fields = array(
         'MerchId' => array('type' => self::INPUT_TYPE, 'name' => 'MerchId', 'value' => $this->getSiteId()),
-        'XMLInfo' => array('type' => self::INPUT_TYPE, 'name' => 'XMLInfo', 'value' => preg_replace('#"#', "'", $order->saveXML())),
+        'XMLInfo' => array('type' => self::INPUT_TYPE, 'name' => 'XMLInfo', 'value' => preg_replace('#"#', "'", $order)),
         'URLCall' => array('type' => self::INPUT_TYPE, 'name' => 'URLCall', 'value' => $urlcall),
         'URLSys' => array('type' => self::INPUT_TYPE, 'name' => 'URLSys', 'value' => $urlsys),
-        'XMLParam' => array('type' => self::INPUT_TYPE, 'name' => 'XMLParam', 'value' => preg_replace('#"#', "'", $xmlparams->saveXML())),
+        'XMLParam' => array('type' => self::INPUT_TYPE, 'name' => 'XMLParam', 'value' => preg_replace('#"#', "'", $xmlparams)),
     );
 
     //form initialization
@@ -228,15 +228,15 @@ class Kwixo extends Service {
   /**
    * builds and returns the HTML frontline submission form
    *
-   * @param FianetXMLElement $order order at the format FianetXMLElement
-   * @param mixed $xmlparams additionnal params
+   * @param string $order XML string of the order
+   * @param string $xmlparams XML string of additionnal params
    * @param string $urlsys URL whereto send the payment tags all allong the transaction life
    * @param string $urlcall URL whereto the customer will be redirected
    * @param string $submittype submit form type: auto, standard or image
    * @param string $imagepath path to the image if submit image
    * @return Form
    */
-  public function getTransactionForm(FianetKwixoControl $order, $xmlparams = null, $urlsys = null, $urlcall = null, $mobile = false, $submittype = Form::SUBMIT_STANDARD, $imagepath = null) {
+  public function getTransactionForm($order, $xmlparams = '', $urlsys = null, $urlcall = null, $mobile = false, $submittype = Form::SUBMIT_STANDARD, $imagepath = null) {
     $urltransaction = 'getUrl' . ($mobile ? 'm' : '') . 'frontline';
     return $this->getSubmissionForm($this->$urltransaction(), $order, $xmlparams, $urlsys, $urlcall, $submittype, $imagepath);
   }
@@ -244,15 +244,15 @@ class Kwixo extends Service {
   /**
    * builds and returns the HTML checkline submission form
    *
-   * @param FianetXMLElement $order order at the format FianetXMLElement
-   * @param mixed $xmlparams additionnal params
+   * @param string $order XML string of the order
+   * @param string $xmlparams XML string of additionnal params
    * @param string $urlsys URL whereto send the payment tags all allong the transaction life
    * @param string $urlcall URL whereto the customer will be redirected
    * @param string $submittype submit form type: auto, standard or image
    * @param string $imagepath path to the image if submit image
    * @return Form
    */
-  public function getChecklineForm(FianetKwixoControl $order, $xmlparams = null, $urlsys = null, $urlcall = null, $submittype = Form::SUBMIT_STANDARD, $imagepath = null) {
+  public function getChecklineForm($order, $xmlparams = '', $urlsys = null, $urlcall = null, $submittype = Form::SUBMIT_STANDARD, $imagepath = null) {
     return $this->getSubmissionForm($this->getUrlcheckline(), $order, $xmlparams, $urlsys, $urlcall, $submittype, $imagepath);
   }
 
@@ -261,7 +261,7 @@ class Kwixo extends Service {
    *
    * @param string $rid merchant order identifier
    * @param string $tid Kwixo transaction identifier
-   * @return FianetXMLElement
+   * @return string
    */
   public function getTagline($rid, $tid) {
     $MD5 = new FianetMD5();
@@ -290,7 +290,7 @@ class Kwixo extends Service {
    * @param string $answertype type of answer wanted: txt|xml|url
    * @param string $urlcall URL whereto send the response, if $answertyp is 'url'
    * @param string $mode 'atomic'
-   * @return FianetXMLElement
+   * @return string
    */
   public function sendRemoteControl($actioncode, $refid, $transacid, $cmplt = 'null', $answertype = Kwixo::REMOTE_CTRL_ANSWER_TYPE_XML, $urlcall = null, $mode = Kwixo::REMOTE_CTRL_MODE_ATOMIC) {
     $MD5 = new FianetMD5();
