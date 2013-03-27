@@ -41,10 +41,10 @@ class Kwixo extends Service {
   /**
    * generates and returns crypt value
    *
-   * @param FianetXMLElement $order
+   * @param FianetDOMDocument $order
    * @return string
    */
-  public function generateCrypt(FianetXMLElement $order) {
+  public function generateCrypt(FianetDOMDocument $order) {
     switch ($this->getCryptVersion()) {
       case '2.0':
         return $this->generateCryptV2($order);
@@ -62,10 +62,10 @@ class Kwixo extends Service {
   /**
    * generates and returns crypt V3 value
    * 
-   * @param FianetXMLElement $order
+   * @param FianetDOMDocument $order
    * @return string
    */
-  public function generateCryptV3(FianetXMLElement $order) {
+  public function generateCryptV3(FianetDOMDocument $order) {
     $siteid = $this->getSiteId();
     $montant = urlencode($order->getOneElementByTagName('montant')->nodeValue);
     $email = urlencode($order->getOneElementByTagNameAndAttribute('utilisateur', 'type', 'facturation')->getOneElementByTagName('email')->nodeValue);
@@ -86,10 +86,10 @@ class Kwixo extends Service {
   /**
    * generates and returns crypt V2 value
    * 
-   * @param FianetXMLElement $order
+   * @param FianetDOMDocument $order
    * @return string
    */
-  public function generateCryptV2(FianetXMLElement $order) {
+  public function generateCryptV2(FianetDOMDocument $order) {
     $MD5 = new FianetMD5();
 
     $montant = $order->getOneElementByTagName('montant')->nodeValue;
@@ -142,7 +142,6 @@ class Kwixo extends Service {
     //connects and get the response of the ws Availabe
     $con = new FianetSocket($this->getUrlavailable());
     $res = $con->send();
-
     //return 'KO' if the connexion failed
     if ($res === false || !isXMLstring($res))
       return 'KO';

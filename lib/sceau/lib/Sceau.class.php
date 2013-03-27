@@ -10,10 +10,10 @@ class Sceau extends Service {
   /**
    * send an XML stream using sendrating.cgi and method POST and returns the answer of the script as a string
    *
-   * @param XMLElement $xml
+   * @param FianetDOMDocument $xml
    * @return string
    */
-  public function sendSendrating(FianetControl &$xml) {
+  public function sendSendrating(FianetDOMDocument &$xml) {
     $this->addCrypt($xml);
     insertLog(__METHOD__, $xml->saveXML());
     $data = array(
@@ -30,10 +30,10 @@ class Sceau extends Service {
   /**
    * generates and returns the crypt value for the order $order
    *
-   * @param XMLElement $order
+   * @param FianetDOMDocument $order
    * @return string
    */
-  public function generateCrypt(FianetControl $order) {
+  public function generateCrypt(FianetDOMDocument $order) {
 
     $refid = $order->getOneElementByTagName('refid')->nodeValue;
     $timestamp = $order->getOneElementByTagName('ip')->getAttribute('timestamp');
@@ -49,9 +49,9 @@ class Sceau extends Service {
   /**
    * adds the element <crypt> into the stream if it has no element <crypt> already, do nothing otherwise
    *
-   * @param XMLElement $order 
+   * @param FianetDOMDocument $order 
    */
-  public function addCrypt(FianetControl &$order) {
+  public function addCrypt(FianetDOMDocument &$order) {
     $crypt = $order->getOneElementByTagName('crypt');
     if (is_null($crypt)) {
       $order->createChild('crypt', $this->generateCrypt($order), array());

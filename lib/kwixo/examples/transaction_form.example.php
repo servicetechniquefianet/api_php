@@ -58,7 +58,7 @@ $xml_params->addParam('param1', 'val1');
 $xml_params->addParam('param2', 'val2');
 
 if ($kwixo_available)
-  echo $kwixo->getTransactionForm($control, $xml_params, null, $_SERVER['HTTP_REFERER'].'urlcall.example.php', $mobile, Form::SUBMIT_STANDARD);
+  echo $kwixo->getTransactionForm($control->saveXML(), $xml_params->saveXML(), null, $_SERVER['HTTP_REFERER'].'urlcall.example.php', $mobile, Form::SUBMIT_STANDARD);
 else 
   die ('Kwixo is not available.');
 
