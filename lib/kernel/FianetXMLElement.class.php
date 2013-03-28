@@ -66,15 +66,14 @@ class FianetXMLElement extends DOMElement
 	public function getElementsByTagNameAndAttribute($name, $attributename, $attributevalue = null)
 	{
 		//gets all the children name $name
-		$children = $this->getElementsByTagName($name);
+		foreach ($this->getElementsByTagName($name) as $child)
+			$children[] = $child;
 
 		//drops children that don't match
 		foreach ($children as $key => $child)
-		{
-			//drops the child from the children array if attribute does not exist or its value does not match with the wanted value
+		//drops the child from the children array if attribute does not exist or its value does not match with the wanted value
 			if (!$child->hasAttribute($attributename) || (!is_null($attributevalue) && $child->getAttribute($attributename) != htmlspecialchars($attributevalue)))
 				unset($children[$key]);
-		}
 
 		return $children;
 	}
