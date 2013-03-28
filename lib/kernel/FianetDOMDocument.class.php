@@ -105,7 +105,7 @@ class FianetDOMDocument extends DOMDocument
 		$children = $this->getElementsByTagNameAndAttribute($name, $attributename, $attributevalue);
 		//returns the first one if exists, null otherwise
 		if (!empty($children))
-			return $children->item(0);
+			return $children[0];
 		else
 			return null;
 	}
