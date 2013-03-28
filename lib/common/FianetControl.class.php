@@ -4,7 +4,7 @@ class FianetControl extends FianetDOMDocument
 {
 
 	private $fianetmodule = 'api_php';
-	private $fianetmoduleversion = '4.1';
+	private $fianetmoduleversion = '4.2';
 
 	public function __construct()
 	{
